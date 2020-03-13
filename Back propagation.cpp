@@ -5,16 +5,57 @@
 
 //Número de neuronas por capa
 
-#define cantidadEntrada 10
+#define cantidadEntrada 7
 #define cantidadOculta1 20
-#define cantidadSalida 5
+#define cantidadSalida 4
 
 
-double sigmoide(int,int);
-double neto(double,double);
-double calcularCapa(double*,int,double*,int);
+double sigmoide(double[],int,double[][1],int);
+double calcularCapa(double[],int,double[][1],int);
+
 
 int main(){
+    /*Patrones de entrada de un 7 segmentos digital
+               a
+            //////              
+         /          /
+         /          /
+      f  /          /  b
+         /          /
+         /     g    / 
+            //////
+         /          /
+         /          /
+      e  /          /  c
+         /          /
+         /          /
+            //////
+               d
+    */
+    double patrones_entrada[10][7] = {{1,1,1,1,1,1,0},  //0     //dispuestos en este orden a,b,c,d,e,f,g
+                                      {0,1,1,0,0,0,0},  //1
+                                      {1,1,0,1,1,0,1},  //2
+                                      {1,1,1,1,0,0,1},  //3
+                                      {0,1,1,0,0,1,1},  //4
+                                      {1,0,1,1,0,1,1},  //5
+                                      {1,0,1,1,1,1,1},  //6
+                                      {1,1,1,0,0,0,1},  //7
+                                      {1,1,1,1,1,1,1},  //8
+                                      {1,1,1,1,0,1,1},  //9
+                                      };
+    
+    //Las respuestas del problema seran en binario
+    double patrones_salida[10][4] = {{0,0,0,0}, // cero en binario
+                                     {0,0,0,1}, // uno en binario
+                                     {0,0,1,0}, // dos en binario
+                                     {0,0,1,1}, // tres en binario
+                                     {0,1,0,0}, // cuatro en binario
+                                     {0,1,0,1}, // cinco en binario
+                                     {0,1,1,0}, // seis en binario
+                                     {0,1,1,1}, // siete en binario
+                                     {1,0,0,0}, // ocho en binario
+                                     {1,0,0,1}, // nueve en binario
+                                     };
     //Cada capa arreglada en matrices
     double capaEntrada[cantidadEntrada + 1];
     double capaOculta1[cantidadOculta1 + 1];
@@ -36,7 +77,7 @@ int main(){
 
 
 //Funcion de transferencia, se usa la sigmoide en este caso
-double sigmoide(double * entradas, int tamanoEntradas, double * pesos, int numeroNeurona){
+double sigmoide(double  entradas[], int tamanoEntradas, double  pesos[][1], int numeroNeurona){
 
     double neto = 0;
     double exponente = 0;
@@ -48,7 +89,7 @@ double sigmoide(double * entradas, int tamanoEntradas, double * pesos, int numer
     se le esta haciendo el calculo
     */
     for(int i=0,i<tamanoEntradas,i++){
-        exponente = exponente + (entradas[i]*pesos[i][numeroNeurona]);
+        exponente = exponente + (entradas[i]*pesos[i][numeroNeurona-1]);
     }
 
     neto=exp(exponente*(-1));
@@ -60,10 +101,20 @@ double sigmoide(double * entradas, int tamanoEntradas, double * pesos, int numer
 
 
 //Función para efectuar los calcuos de una capa
-void calcularCapa(double * entradas, int tamanoEntrada, double * pesos, int cantidadNeuronas){
+void calcularValorCapa(double  entradas[], int tamanoEntrada, double  pesos[][1], int cantidadNeuronas){
     //Realiza el calculo para cada neurona de la capa
     for(int i=0;i<cantidadNeuronas,i++)
         sigmoide(entradas,tamanoEntrada,pesos,i);
+}
+
+
+double error(){
+
+}
+
+
+void calcularErrorCapa(){
+
 }
 
 
