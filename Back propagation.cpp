@@ -95,7 +95,12 @@ double sigmoide(double  entradas[], int tamanoEntradas, double  pesos[][1], int 
     neto=exp(exponente*(-1));
     result = (1/(1+neto));
 
+    if(result>=0.9)
+        result = 1;
+    else if(result<=0.1)
+        result = 0;
     return result;
+    
 }
 
 
