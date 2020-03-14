@@ -6,8 +6,10 @@
 //Número de neuronas por capa
 
 #define cantidadEntrada 7
-#define cantidadOculta1 20
 #define cantidadSalida 4
+#define cantidadOculta1 6       //Se utilizara la regla piramidal con 3 capas, es decir, una sola capa oculta sqrt(7*4)=5.2 
+                                //se decide aproximar al entero superior
+
 
 
 double sigmoide(double[],int,double[][1],int);
@@ -95,11 +97,13 @@ double sigmoide(double  entradas[], int tamanoEntradas, double  pesos[][1], int 
     neto=exp(exponente*(-1));
     result = (1/(1+neto));
 
-    if(result>=0.9)
+
+    //Aproximacion del resultado
+    if(result>=0.9)         //A uno si es mayor que 0.9
         result = 1;
-    else if(result<=0.1)
+    else if(result<=0.1)    //A cero si es menor que 0.1 
         result = 0;
-    return result;
+    return result;          //de lo contrario no se aproxima
     
 }
 
