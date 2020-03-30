@@ -8,9 +8,9 @@
 //Número de neuronas por capa
 
 #define cantidadEntrada 8
-#define cantidadSalida 5
-#define cantidadOculta 6       //Se utilizara la regla piramidal con 3 capas, es decir, una sola capa oculta sqrt(7*4)=5.2 
-                                //se decide aproximar al entero superior
+#define cantidadSalida 4
+#define cantidadOculta 7       //Se utilizara la regla piramidal con 3 capas, es decir, una sola capa oculta sqrt(7*4)=5.2 
+                                //se decide aproximar al entero superior y se agrega una mas para el h0
 
 
 void inicializarPesosEntradaOculta(double[][cantidadOculta],int);
