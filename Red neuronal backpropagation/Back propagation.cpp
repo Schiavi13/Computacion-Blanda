@@ -68,8 +68,8 @@ int main(){
                                      {1,0,0,1}, // nueve en binario
                                      };
     //Cada capa arreglada en matrices
-    double capaEntrada[cantidadEntrada + 1];
-    double capaOculta1[cantidadOculta + 1];
+    double capaEntrada[cantidadEntrada];
+    double capaOculta1[cantidadOculta];
     double capaSalida[cantidadSalida];
     //Se inicializa el X0 y el H0 en 1
     capaEntrada[0] = 1;
