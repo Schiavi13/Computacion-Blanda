@@ -79,10 +79,14 @@ int main(){
     double pesosEntradaOculta[cantidadEntrada][cantidadOculta];
     double pesosOcultaSalida[cantidadOculta][cantidadSalida];
 
-    srand(time(NULL));
+    srand(time(NULL));  //inicia el seed del random con la hora del pc
+
+    //se inicializan los pesos
     inicializarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
     inicializarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
     /*
+
+    //Se muestran los pesos
     mostrarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
     mostrarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
     */
@@ -90,11 +94,12 @@ int main(){
 
 }
 
-
+//Funcion que inicializa los pesos entre la capa de entrada y la capa oculta
 void inicializarPesosEntradaOculta(double pesos[][cantidadOculta], int cantidadNeuronasEntrada){
     int numero = 0;
     double resultado = 0;
 
+    //se incializan los pesos en orden w01,w02,...,
     for(int i=0;i<cantidadNeuronasEntrada;i++){
         for(int j=0;j<cantidadOculta;j++){
             numero = 0 + rand() %2000;
@@ -105,6 +110,7 @@ void inicializarPesosEntradaOculta(double pesos[][cantidadOculta], int cantidadN
     }
 }
 
+//Funcion que inicializa los pesos entre la capa oculta y la capa de salida
 void inicializarPesosOcultaSalida(double pesos[][cantidadSalida], int cantidadNeuronasEntrada){
     int numero = 0;
     double resultado = 0;
