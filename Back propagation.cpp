@@ -5,8 +5,8 @@
 
 //Número de neuronas por capa
 
-#define cantidadEntrada 7
-#define cantidadSalida 4
+#define cantidadEntrada 8
+#define cantidadSalida 5
 #define cantidadOculta1 6       //Se utilizara la regla piramidal con 3 capas, es decir, una sola capa oculta sqrt(7*4)=5.2 
                                 //se decide aproximar al entero superior
 
@@ -69,14 +69,15 @@ int main(){
     //Los pesos de cada capa arreglados en matrices bidimensionales
     double pesosEntradaOculta1[cantidadEntrada][cantidadOculta1];
     double pesosOculta1Salida[cantidadOculta1][cantidadSalida];
-    //Se inicializan los pesos en 1 para que pasen el X0 y el H0
-    pesosEntradaOculta1[0] = 1;
-    pesosOculta1Salida[0] = 1;
 
     return 0;
 
 }
 
+
+void inicializarPesos(double pesos[][1]){
+    
+}
 
 //Funcion de transferencia, se usa la sigmoide en este caso
 double sigmoide(double  entradas[], int tamanoEntradas, double  pesos[][1], int numeroNeurona){
