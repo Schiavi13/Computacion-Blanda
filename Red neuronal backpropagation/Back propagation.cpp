@@ -106,6 +106,12 @@ int main(){
 void inicializarPesosEntradaOculta(double pesos[][cantidadOculta], int cantidadNeuronasEntrada){
     int numero = 0;
     double resultado = 0;
+  
+    //Inicializar pesos que no se usaran, para evitar bugs, basura del buffer
+    for(int i=0;i<cantidadNeuronasEntrada;i++){
+        pesos[i][0] = 0;
+    }
+  
     //printf("Pesos entrada oculta calculo: \n");
     //se incializan los pesos en orden w00,w01,w02,...,w11,w12
     for(int i=0;i<cantidadNeuronasEntrada;i++){
