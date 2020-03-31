@@ -20,10 +20,11 @@ void mostrarPesosOcultaSalida(double[][cantidadSalida],int);
 void transferirAEntrada(double[][7],int,int,double[],double[]);
 void mostrarEntrada(double[]);
 double sigmoideOculta(double[],int,double[][cantidadOculta]);
-double sigmoideSalida(double[],int,double[][cantidadSalida]);
 void calcularValorCapaOculta(double[],int,double[][cantidadOculta],double[]);
-void calcularValorCapaSalida(double[],int,double[][cantidadSalida],double[]);
 void mostrarCapaOculta(double[]);
+double sigmoideSalida(double[],int,double[][cantidadSalida]);
+void calcularValorCapaSalida(double[],int,double[][cantidadSalida],double[]);
+void mostrarCapaSalida(double[]);
 
 int main(){
     /*Patrones de entrada de un 7 segmentos digital
@@ -98,6 +99,9 @@ int main(){
 
     calcularValorCapaOculta(capaEntrada,cantidadEntrada,pesosEntradaOculta,capaOculta);
     mostrarCapaOculta(capaOculta);
+
+    calcularValorCapaSalida(capaOculta,cantidadOculta,pesosOcultaSalida,capaSalida);
+    mostrarCapaSalida(capaSalida);
     return 0;
 
 }
@@ -106,12 +110,11 @@ int main(){
 void inicializarPesosEntradaOculta(double pesos[][cantidadOculta], int cantidadNeuronasEntrada){
     int numero = 0;
     double resultado = 0;
-  
+
     //Inicializar pesos que no se usaran, para evitar bugs, basura del buffer
     for(int i=0;i<cantidadNeuronasEntrada;i++){
         pesos[i][0] = 0;
     }
-  
     //printf("Pesos entrada oculta calculo: \n");
     //se incializan los pesos en orden w00,w01,w02,...,w11,w12
     for(int i=0;i<cantidadNeuronasEntrada;i++){
@@ -211,6 +214,26 @@ double sigmoideOculta(double  entradas[], int tamanoEntradas, double  pesos[][ca
     
 }
 
+
+
+//Función para efectuar los calcuos de una capa
+void calcularValorCapaOculta(double  entradas[], int tamanoEntrada, double  pesos[][cantidadOculta], double capaOculta[]){
+    //Realiza el calculo para cada neurona de la capa
+    for(int i=1;i<cantidadOculta;i++){
+        capaOculta[i] = sigmoideOculta(entradas,tamanoEntrada,pesos,i);
+    }
+}
+
+
+
+
+void mostrarCapaOculta(double oculta[]){
+    printf("Valores capa oculta: \n");
+    for(int i=0;i<cantidadOculta;i++){
+        printf("N%d : %f\n",i,oculta[i]);
+    }
+}
+
 //Funcion de transferencia, se usa la sigmoide en este caso
 double sigmoideSalida(double  entradas[], int tamanoEntradas, double  pesos[][cantidadSalida], int numeroNeurona){
 
@@ -240,14 +263,6 @@ double sigmoideSalida(double  entradas[], int tamanoEntradas, double  pesos[][ca
     
 }
 
-//Función para efectuar los calcuos de una capa
-void calcularValorCapaOculta(double  entradas[], int tamanoEntrada, double  pesos[][cantidadOculta], double capaOculta[]){
-    //Realiza el calculo para cada neurona de la capa
-    for(int i=1;i<cantidadOculta;i++){
-        capaOculta[i] = sigmoideOculta(entradas,tamanoEntrada,pesos,i);
-    }
-}
-
 
 //Función para efectuar los calcuos de una capa
 void calcularValorCapaSalida(double  entradas[], int tamanoEntrada, double  pesos[][cantidadSalida], double capaSalida[]){
@@ -257,12 +272,13 @@ void calcularValorCapaSalida(double  entradas[], int tamanoEntrada, double  peso
     }
 }
 
-void mostrarCapaOculta(double oculta[]){
-    printf("Valores capa oculta: \n");
-    for(int i=0;i<cantidadOculta;i++){
-        printf("N%d : %f\n",i,oculta[i]);
+void mostrarCapaSalida(double salida[]){
+    printf("Valores capa salida: \n");
+    for(int i=0;i<cantidadSalida;i++){
+        printf("N%d : %f\n",i,salida[i]);
     }
 }
+
 double error(){
 
 }
