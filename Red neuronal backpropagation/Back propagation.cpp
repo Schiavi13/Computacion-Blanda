@@ -25,6 +25,8 @@ void mostrarCapaOculta(double[]);
 double sigmoideSalida(double[],int,double[][cantidadSalida]);
 void calcularValorCapaSalida(double[],int,double[][cantidadSalida],double[]);
 void mostrarCapaSalida(double[]);
+void calcularErrorSalida(double[], double[][4], int, double[]);
+void mostrarErrorSalida(double[]);
 
 int main(){
     /*Patrones de entrada de un 7 segmentos digital
@@ -83,6 +85,8 @@ int main(){
     double pesosEntradaOculta[cantidadEntrada][cantidadOculta];
     double pesosOcultaSalida[cantidadOculta][cantidadSalida];
 
+    //Arreglo que contenera los errores en la capa de salida
+    double errorSalida[cantidadSalida];
     srand(time(NULL));  //inicia el seed del random con la hora del pc
 
     //se inicializan los pesos
@@ -102,6 +106,9 @@ int main(){
 
     calcularValorCapaSalida(capaOculta,cantidadOculta,pesosOcultaSalida,capaSalida);
     mostrarCapaSalida(capaSalida);
+
+    calcularErrorSalida(capaSalida,patrones_salida,0,errorSalida);
+    mostrarErrorSalida(errorSalida);
     return 0;
 
 }
@@ -284,10 +291,18 @@ double error(){
 }
 
 
-void calcularErrorCapa(){
-
+void calcularErrorSalida(double capaSalida[], double patrones_salida[][4], int numeroDato, double errorSalida[]){
+    for(int i=0;i<cantidadSalida;i++){
+        errorSalida[i] = patrones_salida[0][i] - capaSalida[i];
+    }
 }
 
+void mostrarErrorSalida(double errorSalida[]){
+    printf("Error capa salida: \n");
+    for(int i=0;i<cantidadSalida;i++){
+        printf("e%d : %f\n",i,errorSalida[i]);
+    }
+}
 
 
 
