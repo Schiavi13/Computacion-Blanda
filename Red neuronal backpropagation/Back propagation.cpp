@@ -11,7 +11,7 @@
 #define cantidadSalida 4
 #define cantidadOculta 7      //Se utilizara la regla piramidal con 3 capas, es decir, una sola capa oculta sqrt(8*4)=5.2 
                                 //se decide aproximar al entero superior y se suma una neurona que sera h0
-
+#define factor 0.1            //factor de aprendizaje arbitrario
 
 void inicializarPesosEntradaOculta(double[][cantidadOculta],int);
 void inicializarPesosOcultaSalida(double[][cantidadSalida],int);
@@ -25,8 +25,10 @@ void mostrarCapaOculta(double[]);
 double sigmoideSalida(double[],int,double[][cantidadSalida]);
 void calcularValorCapaSalida(double[],int,double[][cantidadSalida],double[]);
 void mostrarCapaSalida(double[]);
-void calcularErrorSalida(double[], double[][4], int, double[]);
+void calcularErrorSalida(double[], double[][cantidadSalida], int, double[]);
 void mostrarErrorSalida(double[]);
+void calcularErrorOcultaSalida(double[],double[][cantidadSalida],double[],double[][cantidadSalida]);
+void mostrarErrorOcultaSalida(double[][cantidadSalida]);
 
 int main(){
     /*Patrones de entrada de un 7 segmentos digital
@@ -87,6 +89,8 @@ int main(){
 
     //Arreglo que contenera los errores en la capa de salida
     double errorSalida[cantidadSalida];
+    double errorOcultaSalida[cantidadOculta][cantidadSalida];
+    
     srand(time(NULL));  //inicia el seed del random con la hora del pc
 
     //se inicializan los pesos
@@ -109,6 +113,9 @@ int main(){
 
     calcularErrorSalida(capaSalida,patrones_salida,0,errorSalida);
     mostrarErrorSalida(errorSalida);
+
+    calcularErrorOcultaSalida(errorSalida,pesosOcultaSalida,capaSalida,errorOcultaSalida);
+    mostrarErrorOcultaSalida(errorOcultaSalida);
     return 0;
 
 }
@@ -291,7 +298,7 @@ double error(){
 }
 
 
-void calcularErrorSalida(double capaSalida[], double patrones_salida[][4], int numeroDato, double errorSalida[]){
+void calcularErrorSalida(double capaSalida[], double patrones_salida[][cantidadSalida], int numeroDato, double errorSalida[]){
     for(int i=0;i<cantidadSalida;i++){
         errorSalida[i] = patrones_salida[0][i] - capaSalida[i];
     }
@@ -304,6 +311,21 @@ void mostrarErrorSalida(double errorSalida[]){
     }
 }
 
+void calcularErrorOcultaSalida(double errorSalida[], double pesos[][cantidadSalida], double capaSalida[], double errorOcultaSalida[][cantidadSalida]){
+    for(int i=0;i<cantidadOculta;i++){
+        for(int j=0;j<cantidadSalida;j++){
+            errorOcultaSalida[i][j] = errorSalida[j] * capaSalida[j] * (1-capaSalida[j]) * pesos[i][j];
+        }
+    }
+}
 
+void mostrarErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida]){
+    printf("Error oculta salida: \n");
+    for(int i=0;i<cantidadOculta;i++){
+        for(int j=0;j<cantidadSalida;j++){
+            printf("e%d%d : %f\n",i,j,errorOcultaSalida[i][j]);
+        }
+    }
+}
 
 //consultar valores intermedios de la función sigmoide
