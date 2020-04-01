@@ -30,8 +30,11 @@ void mostrarErrorSalida(double[]);
 void calcularErrorOcultaSalida(double[],double[][cantidadSalida],double[],double[][cantidadSalida]);
 void mostrarErrorOcultaSalida(double[][cantidadSalida]);
 double sumaErrorOcultaSalida(double[][cantidadSalida],int);
+void actualizarPesosEntradaOculta(double[][cantidadOculta],double[],double[][cantidadSalida]);
+/*
 void calcularErrorEntradaOculta(double[],double[][cantidadSalida],double[][cantidadOculta],double[],double[][cantidadOculta]);
 void mostrarErrorEntradaOculta(double[][cantidadOculta]);
+*/
 
 int main(){
     /*Patrones de entrada de un 7 segmentos digital
@@ -93,7 +96,7 @@ int main(){
     //Arreglos que conteneran los errores en las capas
     double errorSalida[cantidadSalida];
     double errorOcultaSalida[cantidadOculta][cantidadSalida];
-    double errorEntradaOculta[cantidadEntrada][cantidadOculta];
+    //double errorEntradaOculta[cantidadEntrada][cantidadOculta];
     
     srand(time(NULL));  //inicia el seed del random con la hora del pc
 
@@ -121,8 +124,12 @@ int main(){
     calcularErrorOcultaSalida(errorSalida,pesosOcultaSalida,capaSalida,errorOcultaSalida);
     mostrarErrorOcultaSalida(errorOcultaSalida);
     
+    actualizarPesosEntradaOculta(pesosEntradaOculta,capaEntrada,errorOcultaSalida);
+    mostrarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
+    /*
     calcularErrorEntradaOculta(capaEntrada,errorOcultaSalida,pesosEntradaOculta,capaOculta,errorEntradaOculta);
     mostrarErrorEntradaOculta(errorEntradaOculta);
+    */
     return 0;
 
 }
@@ -302,6 +309,7 @@ void mostrarCapaSalida(double salida[]){
 
 
 
+
 void calcularErrorSalida(double capaSalida[], double patrones_salida[][cantidadSalida], int numeroDato, double errorSalida[]){
     for(int i=0;i<cantidadSalida;i++){
         errorSalida[i] = patrones_salida[0][i] - capaSalida[i];
@@ -332,15 +340,10 @@ void mostrarErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida]){
     }
 }
 
-double sumaErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida],int dato){
-    double resultado = 0;
-    for(int i=0;i<cantidadSalida;i++){
-        resultado = resultado + errorOcultaSalida[dato][i];
-    }
 
-    return resultado;
-}
 
+
+/*
 void calcularErrorEntradaOculta(double capaEntrada[], double errorOcultaSalida[][cantidadSalida], double pesos[][cantidadOculta], double capaOculta[], double errorEntradaOculta[][cantidadOculta]){
     double sumaErrores = 0;
     for(int i=0;i<cantidadEntrada;i++){
@@ -366,6 +369,26 @@ void mostrarErrorEntradaOculta(double errorEntradaOculta[][cantidadOculta]){
         }
     }
 }
+*/
 
+double sumaErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida],int dato){
+    double resultado = 0;
+    for(int i=0;i<cantidadSalida;i++){
+        resultado = resultado + errorOcultaSalida[dato][i];
+    }
 
+    return resultado;
+}
+
+void actualizarPesosEntradaOculta(double pesosEntradaOculta[][cantidadOculta], double capaEntrada[], double errorOcultaSalida[][cantidadSalida]){
+    double sumaError = 0;
+    for(int i=0;i<cantidadEntrada;i++){
+        for(int j=1;j<cantidadOculta;j++){
+            sumaError = sumaErrorOcultaSalida(errorOcultaSalida,j);
+            printf("suma error %d : %f\n",j,sumaError);
+            pesosEntradaOculta[i][j] = pesosEntradaOculta[i][j] - (factor * capaEntrada[i] * sumaError);
+            sumaError = 0;
+        }
+    }
+}
 //consultar valores intermedios de la función sigmoide
