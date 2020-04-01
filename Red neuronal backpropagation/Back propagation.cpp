@@ -31,6 +31,7 @@ void calcularErrorOcultaSalida(double[],double[][cantidadSalida],double[],double
 void mostrarErrorOcultaSalida(double[][cantidadSalida]);
 double sumaErrorOcultaSalida(double[][cantidadSalida],int);
 void actualizarPesosEntradaOculta(double[][cantidadOculta],double[],double[][cantidadSalida]);
+void actualizarPesosOcultaSalida(double[][cantidadSalida],double[],double[]);
 /*
 void calcularErrorEntradaOculta(double[],double[][cantidadSalida],double[][cantidadOculta],double[],double[][cantidadOculta]);
 void mostrarErrorEntradaOculta(double[][cantidadOculta]);
@@ -126,6 +127,10 @@ int main(){
     
     actualizarPesosEntradaOculta(pesosEntradaOculta,capaEntrada,errorOcultaSalida);
     mostrarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
+
+    actualizarPesosOcultaSalida(pesosOcultaSalida,capaOculta,errorSalida);
+    mostrarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
+    
     /*
     calcularErrorEntradaOculta(capaEntrada,errorOcultaSalida,pesosEntradaOculta,capaOculta,errorEntradaOculta);
     mostrarErrorEntradaOculta(errorEntradaOculta);
@@ -388,6 +393,14 @@ void actualizarPesosEntradaOculta(double pesosEntradaOculta[][cantidadOculta], d
             printf("suma error %d : %f\n",j,sumaError);
             pesosEntradaOculta[i][j] = pesosEntradaOculta[i][j] - (factor * capaEntrada[i] * sumaError);
             sumaError = 0;
+        }
+    }
+}
+
+void actualizarPesosOcultaSalida(double pesosOcultaSalida[][cantidadSalida], double capaOculta[], double errorSalida[]){
+    for(int i=0;i<cantidadOculta;i++){
+        for(int j=0;j<cantidadSalida;j++){
+            pesosOcultaSalida[i][j] = pesosOcultaSalida[i][j] - (factor * capaOculta[i] * errorSalida[j]);
         }
     }
 }
