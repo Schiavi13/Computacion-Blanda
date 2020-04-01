@@ -300,9 +300,6 @@ void mostrarCapaSalida(double salida[]){
     }
 }
 
-double error(){
-
-}
 
 
 void calcularErrorSalida(double capaSalida[], double patrones_salida[][cantidadSalida], int numeroDato, double errorSalida[]){
