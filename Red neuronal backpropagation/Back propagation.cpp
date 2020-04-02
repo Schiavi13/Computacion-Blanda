@@ -11,7 +11,7 @@
 #define cantidadSalida 4
 #define cantidadOculta 7      //Se utilizara la regla piramidal con 3 capas, es decir, una sola capa oculta sqrt(8*4)=5.2 
                                 //se decide aproximar al entero superior y se suma una neurona que sera h0
-#define factor 0.1            //factor de aprendizaje arbitrario
+#define factor 0.16            //factor de aprendizaje arbitrario
 
 void inicializarPesosEntradaOculta(double[][cantidadOculta],int);
 void inicializarPesosOcultaSalida(double[][cantidadSalida],int);
@@ -27,15 +27,22 @@ void calcularValorCapaSalida(double[],int,double[][cantidadSalida],double[]);
 void mostrarCapaSalida(double[]);
 void calcularErrorSalida(double[], double[][cantidadSalida], int, double[]);
 void mostrarErrorSalida(double[]);
-void calcularErrorOcultaSalida(double[],double[][cantidadSalida],double[],double[][cantidadSalida]);
+double calcularErrorSalidaTotal(double[]);
+void calcularErrorOcultaSalida(double[],double[][cantidadSalida],double[],double[][cantidadSalida],double[]);
 void mostrarErrorOcultaSalida(double[][cantidadSalida]);
-double sumaErrorOcultaSalida(double[][cantidadSalida],int);
-void actualizarPesosEntradaOculta(double[][cantidadOculta],double[],double[][cantidadSalida]);
-void actualizarPesosOcultaSalida(double[][cantidadSalida],double[],double[]);
-/*
-void calcularErrorEntradaOculta(double[],double[][cantidadSalida],double[][cantidadOculta],double[],double[][cantidadOculta]);
+double calcularAporteErrorOculta(double[],double[],double[][cantidadSalida],int);
+void calcularErrorEntradaOculta(double[],double[][cantidadSalida],double[][cantidadOculta],double[],double[][cantidadOculta],double[],double[],
+double[][cantidadSalida]);
 void mostrarErrorEntradaOculta(double[][cantidadOculta]);
-*/
+double sumaErrorOcultaSalida(double[][cantidadSalida],int);
+void actualizarPesosEntradaOculta(double[][cantidadOculta],double[],double[][cantidadOculta]);
+void actualizarPesosOcultaSalida(double[][cantidadSalida],double[],double[][cantidadSalida]);
+void entrenar(double[][7],int,int,double[],double[],double[][cantidadOculta],double[],double[][cantidadSalida],double[],double[][4],double[],
+double[][cantidadSalida],double[][cantidadOculta]);
+
+
+
+
 
 int main(){
     /*Patrones de entrada de un 7 segmentos digital
@@ -79,6 +86,10 @@ int main(){
                                      {1,0,0,0}, // ocho en binario
                                      {1,0,0,1}, // nueve en binario
                                      };
+
+    int cantidadDatos = 10;
+    int bitsEntrada = 7;
+    
     //Cada capa arreglada en matrices
     double capaEntrada[cantidadEntrada];
     double capaOculta[cantidadOculta];
@@ -97,6 +108,7 @@ int main(){
     //Arreglos que conteneran los errores en las capas
     double errorSalida[cantidadSalida];
     double errorOcultaSalida[cantidadOculta][cantidadSalida];
+    double errorEntradaOculta[cantidadEntrada][cantidadOculta];
     //double errorEntradaOculta[cantidadEntrada][cantidadOculta];
     
     srand(time(NULL));  //inicia el seed del random con la hora del pc
@@ -105,38 +117,17 @@ int main(){
     inicializarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
     inicializarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
     
-
     //Se muestran los pesos
     mostrarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
     mostrarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
     
-    transferirAEntrada(patrones_entrada,0,7,capaEntrada,pesosEntrada);
-    mostrarEntrada(capaEntrada);
-
-    calcularValorCapaOculta(capaEntrada,cantidadEntrada,pesosEntradaOculta,capaOculta);
-    mostrarCapaOculta(capaOculta);
-
-    calcularValorCapaSalida(capaOculta,cantidadOculta,pesosOcultaSalida,capaSalida);
-    mostrarCapaSalida(capaSalida);
-
-    calcularErrorSalida(capaSalida,patrones_salida,0,errorSalida);
-    mostrarErrorSalida(errorSalida);
-
-    calcularErrorOcultaSalida(errorSalida,pesosOcultaSalida,capaSalida,errorOcultaSalida);
-    mostrarErrorOcultaSalida(errorOcultaSalida);
-    
-    actualizarPesosEntradaOculta(pesosEntradaOculta,capaEntrada,errorOcultaSalida);
-    mostrarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
-
-    actualizarPesosOcultaSalida(pesosOcultaSalida,capaOculta,errorSalida);
-    mostrarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
-    
+    entrenar(patrones_entrada,cantidadDatos,bitsEntrada,capaEntrada,pesosEntrada,pesosEntradaOculta,capaOculta,pesosOcultaSalida,capaSalida,
+    patrones_salida,errorSalida,errorOcultaSalida,errorEntradaOculta);
     /*
     calcularErrorEntradaOculta(capaEntrada,errorOcultaSalida,pesosEntradaOculta,capaOculta,errorEntradaOculta);
     mostrarErrorEntradaOculta(errorEntradaOculta);
     */
     return 0;
-
 }
 
 //Funcion que inicializa los pesos entre la capa de entrada y la capa oculta
@@ -181,7 +172,6 @@ void inicializarPesosOcultaSalida(double pesos[][cantidadSalida], int cantidadNe
 
 
 void mostrarPesosEntradaOculta(double pesos[][cantidadOculta], int cantidaNeuronasEntrada){
-
     printf("Pesos entrada oculta asignados: \n");
     for(int i=0;i<cantidaNeuronasEntrada;i++){
         for(int j=0;j<cantidadOculta;j++){
@@ -192,7 +182,6 @@ void mostrarPesosEntradaOculta(double pesos[][cantidadOculta], int cantidaNeuron
 
 
 void mostrarPesosOcultaSalida(double pesos[][cantidadSalida], int cantidaNeuronasEntrada){
-
     printf("Pesos oculta salida asignados: \n");
     for(int i=0;i<cantidaNeuronasEntrada;i++){
         for(int j=0;j<cantidadSalida;j++){
@@ -203,15 +192,14 @@ void mostrarPesosOcultaSalida(double pesos[][cantidadSalida], int cantidaNeurona
 
 
 void transferirAEntrada(double patrones_entrada[][7],int numeroDato, int bits, double capaEntrada[], double pesosEntrada[] ){
-    for(int i=1;i<bits;i++){
-        capaEntrada[i] = patrones_entrada[numeroDato][i-1] * pesosEntrada[i];
+    for(int i=1;i<=bits;i++){
+        capaEntrada[i] = patrones_entrada[numeroDato][i-1] * pesosEntrada[i-1];
     }
 }
 
 
 void mostrarEntrada(double capaEntrada[]){
     printf("Valores Capa Entrada: \n");
-
     for(int i=0;i<cantidadEntrada;i++){
         printf("N%d : %f\n",i,capaEntrada[i]);
     }
@@ -220,11 +208,9 @@ void mostrarEntrada(double capaEntrada[]){
 
 //Funcion de transferencia, se usa la sigmoide en este caso
 double sigmoideOculta(double  entradas[], int tamanoEntradas, double  pesos[][cantidadOculta], int numeroNeurona){
-
     double neto = 0;
     double exponente = 0;
-    double result = 0;
-    
+    double result = 0; 
     /*
     Se hace el calculo de la suma correspondiente al exponente de la funcion sigmoide
     En este caso X0*W00+X1*W10+...+Xi*Wi0  siendo el segundo subindice de los pesos el parametro numeroNeurona que indica la neurona a la que
@@ -237,14 +223,12 @@ double sigmoideOculta(double  entradas[], int tamanoEntradas, double  pesos[][ca
     neto=exp(exponente*(-1));
     result = (1/(1+neto));
 
-
     //Aproximacion del resultado
     if(result>=0.9)         //A uno si es mayor que 0.9
         result = 1;
     else if(result<=0.1)    //A cero si es menor que 0.1 
         result = 0;
-    return result;          //de lo contrario no se aproxima
-    
+    return result;          //de lo contrario no se aproxima 
 }
 
 
@@ -269,11 +253,9 @@ void mostrarCapaOculta(double oculta[]){
 
 //Funcion de transferencia, se usa la sigmoide en este caso
 double sigmoideSalida(double  entradas[], int tamanoEntradas, double  pesos[][cantidadSalida], int numeroNeurona){
-
     double neto = 0;
     double exponente = 0;
-    double result = 0;
-    
+    double result = 0; 
     /*
     Se hace el calculo de la suma correspondiente al exponente de la funcion sigmoide
     En este caso X0*W00+X1*W10+...+Xi*Wi0  siendo el segundo subindice de los pesos el parametro numeroNeurona que indica la neurona a la que
@@ -286,14 +268,12 @@ double sigmoideSalida(double  entradas[], int tamanoEntradas, double  pesos[][ca
     neto=exp(exponente*(-1));
     result = (1/(1+neto));
 
-
     //Aproximacion del resultado
     if(result>=0.9)         //A uno si es mayor que 0.9
         result = 1;
     else if(result<=0.1)    //A cero si es menor que 0.1 
         result = 0;
-    return result;          //de lo contrario no se aproxima
-    
+    return result;          //de lo contrario no se aproxima   
 }
 
 
@@ -317,9 +297,10 @@ void mostrarCapaSalida(double salida[]){
 
 void calcularErrorSalida(double capaSalida[], double patrones_salida[][cantidadSalida], int numeroDato, double errorSalida[]){
     for(int i=0;i<cantidadSalida;i++){
-        errorSalida[i] = patrones_salida[0][i] - capaSalida[i];
+        errorSalida[i] = (capaSalida[i]-patrones_salida[numeroDato][i]);
     }
 }
+
 
 void mostrarErrorSalida(double errorSalida[]){
     printf("Error capa salida: \n");
@@ -328,10 +309,18 @@ void mostrarErrorSalida(double errorSalida[]){
     }
 }
 
-void calcularErrorOcultaSalida(double errorSalida[], double pesos[][cantidadSalida], double capaSalida[], double errorOcultaSalida[][cantidadSalida]){
+double calcularErrorSalidaTotal(double errorSalida[]){
+    double error = 0;
+    for(int i=0;i<cantidadSalida;i++){
+        error = error + errorSalida[i];
+    }
+    return error;
+}
+
+void calcularErrorOcultaSalida(double errorSalida[], double pesos[][cantidadSalida], double capaSalida[], double errorOcultaSalida[][cantidadSalida], double capaOculta[]){
     for(int i=0;i<cantidadOculta;i++){
         for(int j=0;j<cantidadSalida;j++){
-            errorOcultaSalida[i][j] = errorSalida[j] * capaSalida[j] * (1-capaSalida[j]) * pesos[i][j];
+            errorOcultaSalida[i][j] = errorSalida[j] * capaSalida[j] * (1-capaSalida[j]) * capaOculta[i];
         }
     }
 }
@@ -345,23 +334,29 @@ void mostrarErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida]){
     }
 }
 
+double calcularAporteErrorOculta(double errorSalida[], double capaSalida[], double pesosOcultaSalida[][cantidadSalida], int dato){
+    double resultado = 0;
+    for(int i=0;i<cantidadSalida;i++){
+        resultado = resultado + (errorSalida[i] * capaSalida[i] * (1-capaSalida[i]) * pesosOcultaSalida[dato][i]);
+    }
+    return resultado;
+}
 
-
-
-/*
-void calcularErrorEntradaOculta(double capaEntrada[], double errorOcultaSalida[][cantidadSalida], double pesos[][cantidadOculta], double capaOculta[], double errorEntradaOculta[][cantidadOculta]){
-    double sumaErrores = 0;
+void calcularErrorEntradaOculta(double capaEntrada[], double errorOcultaSalida[][cantidadSalida], double pesos[][cantidadOculta], double capaOculta[],
+double errorEntradaOculta[][cantidadOculta], double errorSalida[], double capaSalida[], double pesosOcultaSalida[][cantidadSalida]){
+    double aporte = 0;
     for(int i=0;i<cantidadEntrada;i++){
         errorEntradaOculta[i][0] = 0;       //se inicializan espacios sin usar para evitar bugs
     }
 
     for(int i=0;i<cantidadEntrada;i++){
+        double aporte = 0;
         for(int j=1;j<cantidadOculta;j++){
             
-            sumaErrores = sumaErrorOcultaSalida(errorOcultaSalida,j);
+            aporte = calcularAporteErrorOculta(errorSalida,capaSalida,pesosOcultaSalida,j);
             //printf("suma error %d : %f\n",j,sumaErrores);
-            errorEntradaOculta[i][j] = capaEntrada[i] * capaOculta[j] * (1-capaOculta[j]) * sumaErrores;
-            sumaErrores = 0;
+            errorEntradaOculta[i][j] = capaEntrada[i] * capaOculta[j] * (1-capaOculta[j]) * aporte;
+            aporte = 0;
         }
     }
 }
@@ -374,7 +369,7 @@ void mostrarErrorEntradaOculta(double errorEntradaOculta[][cantidadOculta]){
         }
     }
 }
-*/
+
 
 double sumaErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida],int dato){
     double resultado = 0;
@@ -385,23 +380,58 @@ double sumaErrorOcultaSalida(double errorOcultaSalida[][cantidadSalida],int dato
     return resultado;
 }
 
-void actualizarPesosEntradaOculta(double pesosEntradaOculta[][cantidadOculta], double capaEntrada[], double errorOcultaSalida[][cantidadSalida]){
-    double sumaError = 0;
-    for(int i=0;i<cantidadEntrada;i++){
-        for(int j=1;j<cantidadOculta;j++){
-            sumaError = sumaErrorOcultaSalida(errorOcultaSalida,j);
-            printf("suma error %d : %f\n",j,sumaError);
-            pesosEntradaOculta[i][j] = pesosEntradaOculta[i][j] - (factor * capaEntrada[i] * sumaError);
-            sumaError = 0;
+void actualizarPesosEntradaOculta(double pesosEntradaOculta[][cantidadOculta], double capaEntrada[], double errorEntradaOculta[][cantidadOculta]){
+    for(int i=1;i<cantidadEntrada;i++){
+        for(int j=1;j<cantidadOculta;j++){      
+            pesosEntradaOculta[i][j] = pesosEntradaOculta[i][j] - (factor * errorEntradaOculta[i][j]);
         }
     }
 }
 
-void actualizarPesosOcultaSalida(double pesosOcultaSalida[][cantidadSalida], double capaOculta[], double errorSalida[]){
-    for(int i=0;i<cantidadOculta;i++){
+void actualizarPesosOcultaSalida(double pesosOcultaSalida[][cantidadSalida], double capaOculta[], double errorOcultaSalida[][cantidadSalida]){
+    for(int i=1;i<cantidadOculta;i++){
         for(int j=0;j<cantidadSalida;j++){
-            pesosOcultaSalida[i][j] = pesosOcultaSalida[i][j] - (factor * capaOculta[i] * errorSalida[j]);
+            pesosOcultaSalida[i][j] = pesosOcultaSalida[i][j] - (factor * errorOcultaSalida[i][j]);
         }
     }
 }
-//consultar valores intermedios de la función sigmoide
+
+void entrenar(double patrones_entrada[][7], int cantidadDatos, int bitsEntrada, double capaEntrada[], double pesosEntrada[], 
+double pesosEntradaOculta[][cantidadOculta], double capaOculta[], double pesosOcultaSalida[][cantidadSalida], double capaSalida[], 
+double patrones_salida[][4], double errorSalida[], double errorOcultaSalida[][cantidadSalida], double errorEntradaOculta[][cantidadOculta]){
+    int epocas = 0;
+    double errorTotal=1;
+    while(errorTotal!=0){
+    
+        errorTotal = 0;
+        for(int j=0;j<cantidadDatos;j++){
+            transferirAEntrada(patrones_entrada,j,bitsEntrada,capaEntrada,pesosEntrada);
+            mostrarEntrada(capaEntrada);
+
+            calcularValorCapaOculta(capaEntrada,cantidadEntrada,pesosEntradaOculta,capaOculta);
+            mostrarCapaOculta(capaOculta);
+
+            calcularValorCapaSalida(capaOculta,cantidadOculta,pesosOcultaSalida,capaSalida);
+            mostrarCapaSalida(capaSalida);
+
+            calcularErrorSalida(capaSalida,patrones_salida,j,errorSalida);
+            mostrarErrorSalida(errorSalida);
+            errorTotal = errorTotal + calcularErrorSalidaTotal(errorSalida);
+            calcularErrorOcultaSalida(errorSalida,pesosOcultaSalida,capaSalida,errorOcultaSalida,capaOculta);
+            mostrarErrorOcultaSalida(errorOcultaSalida);
+            
+            calcularErrorEntradaOculta(capaEntrada,errorOcultaSalida,pesosEntradaOculta,capaOculta,errorEntradaOculta,errorSalida,capaSalida,
+            pesosOcultaSalida);
+            mostrarErrorEntradaOculta(errorEntradaOculta);
+
+            actualizarPesosEntradaOculta(pesosEntradaOculta,capaEntrada,errorEntradaOculta);
+            mostrarPesosEntradaOculta(pesosEntradaOculta,cantidadEntrada);
+
+            actualizarPesosOcultaSalida(pesosOcultaSalida,capaOculta,errorOcultaSalida);
+            mostrarPesosOcultaSalida(pesosOcultaSalida,cantidadOculta);
+        }
+        epocas++;
+    
+    }
+    printf("Epocas: %d\n",epocas);
+}
